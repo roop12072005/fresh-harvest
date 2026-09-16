@@ -17,6 +17,14 @@ export default function OrderCard({ order }) {
         </div>
         <div className="flex items-center gap-4">
           <OrderStatus status={order.status} compact />
+          {order.statusKey === 'delivered' && (
+            <Link
+              to={`/orders/${order.orderNumber || order.id}`}
+              className="rounded-lg border border-primary-200 px-4 py-2 text-sm font-medium text-primary-700 transition-colors hover:bg-primary-50"
+            >
+              Rate &amp; Review
+            </Link>
+          )}
           <Link
             to={`/orders/${order.orderNumber || order.id}`}
             className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"

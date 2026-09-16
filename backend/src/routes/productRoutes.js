@@ -6,7 +6,7 @@ import {
   getRelatedProducts,
   listProducts,
 } from '../controllers/productController.js'
-import { productReviewRouter } from './reviewRoutes.js'
+import { listReviews } from '../controllers/reviewController.js'
 
 const router = Router()
 
@@ -30,6 +30,5 @@ router.get(
 
 router.get('/:productId', getProduct)
 router.get('/:productId/related', getRelatedProducts)
-router.use('/:productId/reviews', productReviewRouter)
-
+router.get('/:productId/reviews', listReviews)
 export default router

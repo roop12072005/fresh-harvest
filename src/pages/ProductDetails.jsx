@@ -151,6 +151,7 @@ export default function ProductDetails() {
                 <Rating value={review.rating} />
               </div>
               <p className="mt-2 text-sm text-neutral-600">{review.comment}</p>
+              {review.imageUrl && <img src={review.imageUrl} alt="Customer review" className="mt-3 max-h-48 rounded-lg object-cover" />}
             </div>
           ))}
         </div>

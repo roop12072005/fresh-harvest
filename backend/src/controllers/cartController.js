@@ -10,6 +10,19 @@ async function getOrCreateCart(userId) {
   let cart = await Cart.findOne({ userId })
   if (!cart) {
     cart = await Cart.create({ userId, items: [] })
+    return cart
+  }
+  const merged = new Map()
+  for (const item of cart.items) {
+    const key = String(item.productId)
+    merged.set(key, {
+      productId: item.productId,
+      quantity: (merged.get(key)?.quantity || 0) + item.quantity,
+    })
+  }
+  if (merged.size !== cart.items.length) {
+    cart.items = [...merged.values()]
+    await cart.save()
   }
   return cart
 }

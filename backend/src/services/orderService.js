@@ -52,7 +52,7 @@ async function loadQuotedItems(rawItems) {
     throw new ApiError(400, 'Order items are required')
   }
 
-  const quoted = []
+  const mergedItems = new Map()
   for (const item of rawItems) {
     const productId = item.productId || item._id || item.id
     const quantity = Number(item.quantity)
@@ -62,6 +62,15 @@ async function loadQuotedItems(rawItems) {
     if (!Number.isInteger(quantity) || quantity <= 0) {
       throw new ApiError(400, 'Quantity must be a positive integer')
     }
+    const key = String(productId)
+    mergedItems.set(key, {
+      productId,
+      quantity: (mergedItems.get(key)?.quantity || 0) + quantity,
+    })
+  }
+
+  const quoted = []
+  for (const { productId, quantity } of mergedItems.values()) {
 
     const product = await Product.findById(productId)
     if (!product) {

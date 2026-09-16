@@ -23,13 +23,24 @@ export function toOrderDto(order) {
   const latestCancellation = [...(obj.statusHistory || [])]
     .reverse()
     .find((item) => item.status === 'cancelled' || item.status === 'refunded')
+  const mergedItems = new Map()
+  for (const item of obj.items || []) {
+    const key = String(item.productId)
+    const current = mergedItems.get(key)
+    if (current) {
+      current.quantity += item.quantity
+      current.lineTotal += item.lineTotal
+    } else {
+      mergedItems.set(key, { ...item })
+    }
+  }
   return {
     id: obj.orderNumber,
     _id: obj._id,
     orderNumber: obj.orderNumber,
     date: obj.createdAt,
     createdAt: obj.createdAt,
-    items: (obj.items || []).map((item) => ({
+    items: [...mergedItems.values()].map((item) => ({
       id: item.productId,
       productId: item.productId,
       name: item.name,
