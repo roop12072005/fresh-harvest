@@ -25,6 +25,10 @@ export const env = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
   adminUrl: process.env.ADMIN_URL || 'http://localhost:5174',
+  corsOrigins: (process.env.CORS_ORIGINS || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean),
   cookieSecure: process.env.COOKIE_SECURE === 'true',
   uploadDir: process.env.UPLOAD_DIR || 'uploads',
   publicBaseUrl: process.env.PUBLIC_BASE_URL || 'http://localhost:5000',

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import { env } from '../config/env.js'
+import { env, isProduction } from '../config/env.js'
 
 const CUSTOMER_COOKIE = 'fc_token'
 const ADMIN_COOKIE = 'fc_admin_token'
@@ -27,7 +27,7 @@ export function cookieOptions() {
   return {
     httpOnly: true,
     secure: env.cookieSecure,
-    sameSite: 'lax',
+    sameSite: isProduction ? 'none' : 'lax',
     maxAge: maxAgeMs(),
     path: '/',
   }

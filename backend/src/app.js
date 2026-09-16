@@ -36,7 +36,7 @@ export function createApp() {
   )
   app.use(
     cors({
-      origin: [env.clientUrl, env.adminUrl, 'http://localhost:5175'],
+      origin: [env.clientUrl, env.adminUrl, ...env.corsOrigins, 'http://localhost:5175'],
       credentials: true,
     })
   )
