@@ -1,16 +1,9 @@
 import { Router } from 'express'
+import multer from 'multer'
 import { requireAuth } from '../middleware/auth.js'
-import {
-  createReview,
-  deleteReview,
-  listReviews,
-  updateReview,
-} from '../controllers/reviewController.js'
-
-export const productReviewRouter = Router({ mergeParams: true })
-productReviewRouter.get('/', listReviews)
-productReviewRouter.post('/', requireAuth, createReview)
+import { deleteReview, updateReview } from '../controllers/reviewController.js'
 
 export const reviewRouter = Router()
-reviewRouter.patch('/:reviewId', requireAuth, updateReview)
+const reviewUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } })
+reviewRouter.patch('/:reviewId', requireAuth, reviewUpload.single('image'), updateReview)
 reviewRouter.delete('/:reviewId', requireAuth, deleteReview)

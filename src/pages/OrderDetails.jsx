@@ -5,11 +5,14 @@ import { formatPrice, formatDate } from '../utils/formatters'
 import OrderStatus from '../components/order/OrderStatus'
 import EmptyState from '../components/ui/EmptyState'
 import Button from '../components/ui/Button'
+import ReviewForm from '../components/review/ReviewForm'
 
 export default function OrderDetails() {
   const { orderId } = useParams()
   const [order, setOrder] = useState(null)
   const [error, setError] = useState('')
+  const [reviewOpen, setReviewOpen] = useState(false)
+  const [reviews, setReviews] = useState([])
 
   useEffect(() => {
     let cancelled = false
@@ -18,6 +21,7 @@ export default function OrderDetails() {
         .then((data) => {
           if (!cancelled) {
             setOrder(data)
+            api(`/api/orders/${orderId}/reviews`).then(setReviews).catch(() => setReviews([]))
             setError('')
           }
         })
@@ -93,6 +97,35 @@ export default function OrderDetails() {
           </p>
         )}
       </div>
+      {order.statusKey === 'delivered' && (
+        <div className="mt-8 rounded-2xl border border-neutral-100 bg-white p-6 shadow-[var(--shadow-card)]">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold">How was your order?</h2>
+              <p className="mt-1 text-sm text-neutral-500">Review each product from this order.</p>
+            </div>
+            <Button type="button" variant="secondary" onClick={() => setReviewOpen((open) => !open)}>
+              {reviews.length === order.items.length ? 'Edit Reviews' : 'Rate & Review'}
+            </Button>
+          </div>
+          {reviewOpen && (
+            <div className="mt-4 space-y-4">
+              {order.items.map((item) => {
+                const existing = reviews.find((review) => String(review.productId) === String(item.productId))
+                return (
+                  <div key={item.productId} className="flex gap-3 rounded-xl border border-neutral-100 p-3">
+                    <img src={item.image} alt={item.name} className="h-14 w-14 rounded-lg object-cover" />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium">{item.name}</p>
+                      <ReviewForm productId={item.productId} orderId={order._id} existing={existing} onSaved={(saved) => setReviews((current) => current.some((review) => review._id === saved._id) ? current.map((review) => review._id === saved._id ? saved : review) : [...current, saved])} onDeleted={() => existing && setReviews((current) => current.filter((review) => review._id !== existing._id))} />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      )}
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
         <div className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-[var(--shadow-card)]">
           <h2 className="text-lg font-semibold">Items</h2>
